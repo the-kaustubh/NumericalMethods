@@ -1,36 +1,62 @@
-#include<stdio.h>
+#include <stdio.h>
+#include <stdlib.h>
 
-float function(float temp)
-{
-      return 1 / (1 + temp * temp);
+#define SQR(x) ((x) * (x))
+
+typedef float (*fn)(float);
+
+float fx(float x) {
+
+  return 1/(1+x);
 }
 
-int main()
-{
-      float lower_bound, upper_bound, h, sum = 0, value;
-      int count, interval;
-      printf("Enter Lower Boundary Value:\t");
-      scanf("%f", &lower_bound);
-      printf("Enter Upper Boundary Value:\t");
-      scanf("%f", &upper_bound);
-      printf("\nEnter Interval Limit:\t");
-      // scanf("%d", &interval);
-      interval = 6;
-      h = (upper_bound - lower_bound) / interval;
-      // h = .5;
-      sum = function(lower_bound) + function(upper_bound);
-      for(count = 1; count < interval; count++)
-      {
-            if(count % 3 == 0)
-            {
-                  sum = sum + 2 * function(lower_bound + count * h);
-            }
-            else
-            {
-                  sum = sum + 3 * function(lower_bound + count * h);
-            }
-      }
-      value = (3 * h / 8) * sum;
-      printf("\nValue of Simpson's 3/8 Rule Integration:\t%f\n", value);
-      return 0;
+float Simpson_3_8(fn fx, float ll, float ul, float h) {
+
+  int i  = 0;
+  float inc = ll;
+  int n = (int)((ul - ll)/h);
+  float * y = malloc( n * sizeof(float));
+
+  printf("\nx\t\ty" );
+  while(inc <= ul) {
+    y[i] = fx(inc);
+    inc += h;
+    printf("\n%f\t%f", inc, y[i]);
+    i++;
+  }
+  printf("\n\n" );
+
+  float sum = y[0] + y[n];
+
+  for(int i = 1; i < n; i++) {
+    if(!(i % 3)) {
+      sum += (2 * y[i]);
+    }
+    else {
+      sum += (3 * y[i]);
+    }
+  }
+  sum *= (3 * h / 8);
+  return sum;
+}
+
+int main(int argc, char const *argv[]) {
+  int n, sizeReq, i = 0;
+  float h, ll, ul, ans;
+
+  printf("Enter value of h:\t" );
+  scanf("%f", &h);
+
+  printf("Enter lower limit:\t" );
+  scanf("%f", &ll);
+
+  printf("Enter upper limit: \t" );
+  scanf("%f", &ul);
+
+  ans = Simpson_3_8(&fx, ll, ul, h);
+
+  printf("By Simpson's 3/8th Rule:\n");
+  printf("\n I = %f\n", ans);
+
+  return 0;
 }
